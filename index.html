@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Démo de boutique en ligne pour Capiluxe, soins capillaires naturels à Saint-Louis.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Capiluxe Boutique</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;500;600;700&family=Pinyon+Script&display=swap">
+<style>
+/* Layout: boutique mobile-first (clientes TikTok), bandeau promo, grille produits, tiroir panier ; vue Admin séparée */
+:root{
+  --bg:#FFF6F9; --surface:#FFFFFF; --tint:#FBE3EC; --lilac:#E9E1F8; --lilac-ink:#7B62B8;
+  --ink:#341A33; --muted:#7D6378; --line:#EFD7E2;
+  --accent:#D9467F; --accent-ink:#FFFFFF; --gold:#E9C34B; --ok:#2E8B57; --warn:#C47A12; --bad:#B23A48;
+  --font-display:"Gloock", Georgia, "Times New Roman", serif;
+  --font-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-logo:"Pinyon Script", "Snell Roundhand", cursive;
+  --r:18px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1B1119; --surface:#271926; --tint:#3A2034; --lilac:#2E2540; --lilac-ink:#C9B6F2;
+  --ink:#F8E9F1; --muted:#C2A6B9; --line:#3E2A3A; --accent:#F0679C; --accent-ink:#1B1119; --gold:#E9C34B;
+  --ok:#5CC48A; --warn:#E3A33E; --bad:#F07A86; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1B1119; --surface:#271926; --tint:#3A2034; --lilac:#2E2540; --lilac-ink:#C9B6F2;
+  --ink:#F8E9F1; --muted:#C2A6B9; --line:#3E2A3A; --accent:#F0679C; --accent-ink:#1B1119; --gold:#E9C34B;
+  --ok:#5CC48A; --warn:#E3A33E; --bad:#F07A86; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;line-height:1.12;text-wrap:balance;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--lilac-ink);outline-offset:2px}
+a{color:inherit}
+.num{font-variant-numeric:tabular-nums}
+
+/* barre démo */
+.demobar{background:var(--ink);color:var(--bg);font-size:13px}
+.demobar .wrap{display:flex;gap:12px;align-items:center;justify-content:space-between;padding-block:8px;flex-wrap:wrap}
+.seg{display:inline-flex;background:color-mix(in srgb,var(--bg) 16%,transparent);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--bg);padding:5px 14px;border-radius:999px;font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--bg);color:var(--ink)}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo b{font-family:var(--font-logo);font-weight:400;font-size:34px;line-height:1;color:var(--ink)}
+.logo small{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.cartbtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--ink);background:transparent;border-radius:999px;padding:8px 16px;font-weight:600}
+.cartbtn .c{background:var(--accent);color:var(--accent-ink);border-radius:999px;min-width:22px;height:22px;display:inline-grid;place-items:center;font-size:12px;padding:0 6px}
+
+.promo{background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:14px;text-align:center}
+.promo .wrap{padding-block:9px}
+
+/* hero */
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center;padding-block:40px 28px}
+.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac-ink);font-weight:700}
+.hero h1{font-size:clamp(36px,6vw,62px);margin-top:10px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.lead{font-size:18px;color:var(--muted);max-width:46ch;margin:16px 0 22px}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:999px;padding:13px 22px;font-weight:700;background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.wa{background:#1FA855;color:#fff}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.chip{font-size:13px;background:var(--lilac);color:var(--lilac-ink);border-radius:999px;padding:6px 12px;font-weight:600}
+.stage{position:relative;aspect-ratio:1/1;max-width:100%;border-radius:50% 50% 24px 24px;background:radial-gradient(circle at 50% 38%,var(--tint),transparent 70%),var(--lilac);overflow:hidden}
+.stage svg{position:absolute}
+.stage .a{width:46%;left:6%;bottom:6%}
+.stage .b{width:48%;right:4%;bottom:4%}
+.stage .c2{width:34%;left:36%;bottom:30%}
+.stamp{position:absolute;top:8%;right:8%;width:96px;height:96px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;text-align:center;font-size:11px;font-weight:700;letter-spacing:.06em;line-height:1.2;transform:rotate(-10deg);padding:10px}
+.stamp span{font-family:var(--font-display);font-size:22px;font-weight:400;display:block;letter-spacing:0}
+
+/* trust */
+.trust{border-block:1px solid var(--line);background:var(--surface)}
+.trust .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding-block:18px}
+.trust div{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.trust strong{display:block;font-size:15px}
+.trust .ic{flex:none;width:34px;height:34px;border-radius:10px;background:var(--tint);display:grid;place-items:center;color:var(--accent)}
+.trust span{color:var(--muted)}
+
+section.block .wrap{padding-block:44px 8px}
+.sechead{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.sechead h2{font-size:clamp(28px,4vw,40px)}
+.sechead p{color:var(--muted);margin:6px 0 0;max-width:52ch}
+
+/* diag */
+.types{display:flex;gap:8px;flex-wrap:wrap}
+.types button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;font-weight:600}
+.types button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* grid produits */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.card .pic{background:var(--tint);aspect-ratio:1/1;max-width:100%;display:grid;place-items:center;position:relative}
+.card .pic svg{width:78%;height:78%}
+.card .pic img{width:100%;height:100%;object-fit:cover}
+.tag{position:absolute;top:10px;left:10px;background:var(--surface);color:var(--ink);font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 10px}
+.card .body{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.card h3{font-family:var(--font-body);font-weight:700;font-size:16px}
+.card p{margin:0;font-size:13.5px;color:var(--muted)}
+.card .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:8px}
+.price{font-weight:700;font-size:16px}
+.add{border:0;background:var(--ink);color:var(--bg);border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px}
+.add.done{background:var(--ok);color:#fff}
+
+/* gammes */
+.packs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pack{border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line)}
+.pack.hi{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pack.hi p,.pack.hi li{color:color-mix(in srgb,var(--bg) 78%,transparent)}
+.pack h3{font-size:28px}
+.pack ul{margin:0;padding-left:18px;font-size:14.5px;color:var(--muted)}
+.pack .pp{display:flex;align-items:baseline;gap:10px;margin-top:auto}
+.pack .pp b{font-family:var(--font-display);font-weight:400;font-size:32px}
+.pack .pp s{color:var(--muted);font-size:14px}
+.pack.hi .pp s{color:color-mix(in srgb,var(--bg) 60%,transparent)}
+.pack .btn{justify-content:center}
+.pack.hi .btn{background:var(--accent)}
+
+/* routine */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.step{border-top:2px solid var(--ink);padding-top:12px}
+.step b{font-family:var(--font-display);font-weight:400;font-size:24px;display:block}
+.step small{color:var(--accent);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:11.5px}
+.step p{margin:6px 0 0;color:var(--muted);font-size:14.5px}
+
+/* tiktok */
+.tk{background:var(--lilac);border-radius:28px;padding:28px;display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
+.tk .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tk .stats div{background:var(--surface);border-radius:14px;padding:14px;text-align:center}
+.tk .stats b{font-family:var(--font-display);font-weight:400;font-size:26px;display:block}
+.tk .stats span{font-size:12.5px;color:var(--muted)}
+
+footer{margin-top:48px;background:var(--ink);color:var(--bg)}
+footer .wrap{padding-block:30px;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:24px;font-size:14px}
+footer .logo b{color:var(--bg)}
+footer p,footer li{color:color-mix(in srgb,var(--bg) 75%,transparent);margin:0}
+footer ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+footer h4{margin:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+
+/* tiroir */
+.scrim{position:fixed;inset:0;background:rgba(20,8,18,.45);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--bg);z-index:21;display:flex;flex-direction:column;box-shadow:-20px 0 40px rgba(0,0,0,.18);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+.dh h2{font-size:26px}
+.x{border:0;background:var(--tint);border-radius:50%;width:36px;height:36px;font-size:18px}
+.db{flex:1;overflow:auto;padding:16px 18px;display:grid;gap:12px;align-content:start}
+.line{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center}
+.line .mini{width:56px;height:56px;border-radius:12px;background:var(--tint);display:grid;place-items:center}
+.line .mini svg{width:46px;height:46px}
+.line .mini img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;margin-top:4px}
+.qty button{border:0;background:transparent;width:28px;height:28px;font-weight:700}
+.df{border-top:1px solid var(--line);padding:16px 18px;display:grid;gap:10px}
+.tot{display:flex;justify-content:space-between}
+.tot.big{font-weight:700;font-size:18px}
+.muted{color:var(--muted);font-size:13.5px}
+.form{display:grid;gap:12px}
+.form label{display:grid;gap:4px;font-size:13.5px;font-weight:600}
+.form input,.form select,.form textarea{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:11px 12px;font:inherit;font-weight:400;width:100%}
+.pay{display:grid;gap:8px}
+.pay label{display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;font-weight:600;background:var(--surface)}
+.pay label:has(input:checked){border-color:var(--accent);background:var(--tint)}
+.pay small{display:block;font-weight:400;color:var(--muted)}
+.err{color:var(--bad);font-size:13px;font-weight:600}
+.okbox{background:var(--tint);border-radius:16px;padding:16px;display:grid;gap:10px}
+.okbox pre{white-space:pre-wrap;font-family:var(--font-body);font-size:13.5px;margin:0;background:var(--surface);border-radius:12px;padding:12px;max-height:220px;overflow:auto}
+
+/* admin */
+.admin .wrap{padding-block:28px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+.kpi span{font-size:12.5px;color:var(--muted);font-weight:600}
+.kpi b{display:block;font-family:var(--font-display);font-weight:400;font-size:28px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-weight:600;font-size:13.5px}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.orders{display:grid;gap:10px}
+.order{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--st,var(--line));border-radius:14px;padding:14px;display:grid;grid-template-columns:1.3fr 1.6fr auto;gap:14px;align-items:start}
+.order > div{min-width:0}
+.order h3{font-family:var(--font-body);font-size:16px;font-weight:700}
+.order .meta{font-size:13px;color:var(--muted)}
+.order ul{margin:0;padding-left:16px;font-size:13.5px}
+.order .act{display:grid;gap:6px;justify-items:end}
+.order select{border:1.5px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--surface);color:var(--ink);font:inherit;font-size:13.5px}
+.pill{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--tint)}
+.mini-btn{border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px;background:#1FA855;color:#fff;text-decoration:none}
+.note{background:var(--lilac);color:var(--lilac-ink);border-radius:12px;padding:10px 14px;font-size:13.5px;font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;z-index:30;font-size:14px}
+
+@media (max-width:900px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .trust .wrap{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:760px){
+  .hero .wrap{grid-template-columns:1fr;padding-block:24px 16px}
+  .stage{max-width:420px;width:100%;margin:0 auto}
+  .packs{grid-template-columns:1fr}
+  .tk{grid-template-columns:1fr;padding:20px}
+  footer .wrap{grid-template-columns:1fr}
+  .order{grid-template-columns:1fr}
+  .order .act{justify-items:start;grid-auto-flow:column;justify-content:start}
+}
+@media (max-width:420px){
+  .grid{gap:10px}
+  .card .body{padding:10px}
+  .card h3{font-size:14.5px}
+  .card p{display:none}
+  .add{padding:7px 11px;font-size:13px}
+  .logo b{font-size:28px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .drawer{animation:slide .25s ease-out}
+  @keyframes slide{from{transform:translateX(30px);opacity:.6}}
+  .card{transition:transform .2s}
+  .card:hover{transform:translateY(-3px)}
+}
+</style>
+</head>
+<body>
+
+
+<div class="demobar">
+  <div class="wrap">
+    <span><strong>Démo</strong> · maquette proposée par Babacar Sy</span>
+    <div class="seg" role="group" aria-label="Changer de vue">
+      <button id="v-shop" aria-pressed="true">Boutique</button>
+      <button id="v-admin" aria-pressed="false">Espace commandes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BOUTIQUE ============ -->
+<div id="shop">
+  <header class="top">
+    <div class="wrap">
+      <a class="logo" href="#top" aria-label="Capiluxe, accueil">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="var(--tint)"/><circle cx="20" cy="16" r="10.5" fill="var(--ink)"/><circle cx="12" cy="13" r="5" fill="var(--ink)"/><circle cx="28" cy="13" r="5" fill="var(--ink)"/><circle cx="20" cy="9" r="6" fill="var(--ink)"/><ellipse cx="21" cy="22" rx="5.2" ry="6.4" fill="var(--accent)"/><path d="M13 36c1-6 4-8 8-8s7 2 8 8z" fill="var(--accent)"/></svg>
+        <span><b>Capiluxe</b><small>Soins capillaires naturels</small></span>
+      </a>
+      <button class="cartbtn" id="openCart" aria-label="Ouvrir le panier">Panier <span class="c num" id="cartCount">0</span></button>
+    </div>
+  </header>
+  <div class="promo"><div class="wrap">🚚 Livraison 500 F partout à Saint-Louis · Paiement à la livraison</div></div>
+
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow">Saint-Louis · Fait main</div>
+        <h1>Des cheveux qui <em>poussent</em>, nourris au naturel.</h1>
+        <p class="lead">Pommades, chantilly, huiles booster et sprays pensés pour les cheveux crépus, les locks et les cheveux des enfants. Formulés par une karawalogue certifiée.</p>
+        <div class="cta">
+          <a class="btn" href="#produits">Voir les produits</a>
+          <a class="btn ghost" href="#gammes">Choisir ma gamme</a>
+        </div>
+        <div class="badges">
+          <span class="chip">Karité & cacao</span><span class="chip">Sans paraben</span><span class="chip">Gombo & nigelle</span>
+        </div>
+      </div>
+      <div class="stage" aria-hidden="true">
+        <div class="stamp"><div><span>500 F</span>livraison<br>Saint-Louis</div></div>
+        <div id="heroArt"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust">
+    <div class="wrap">
+      <div><div class="ic">₣</div><div><strong>Paiement à la livraison</strong><span>ou Wave / Orange Money</span></div></div>
+      <div><div class="ic">⇢</div><div><strong>Livré en 24 h</strong><span>Saint-Louis et environs</span></div></div>
+      <div><div class="ic">✓</div><div><strong>Karawalogue certifiée</strong><span>Conseils pour ton type de cheveux</span></div></div>
+      <div><div class="ic">✆</div><div><strong>Suivi sur WhatsApp</strong><span>77 132 27 79</span></div></div>
+    </div>
+  </div>
+
+  <section class="block" id="produits">
+    <div class="wrap">
+      <div class="sechead">
+        <div><h2>Nos soins</h2><p>Dis-nous ce que tu cherches, on te montre les bons produits.</p></div>
+      </div>
+      <div class="types" role="group" aria-label="Filtrer par besoin" id="types"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section class="block" id="gammes">
+    <div class="wrap">
+      <div class="sechead"><div><h2>Les gammes complètes</h2><p>La routine entière, déjà assemblée. Le meilleur prix pour commencer.</p></div></div>
+      <div class="packs" id="packs"></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sechead"><div><h2>Ta routine en 4 gestes</h2><p>Une fois par semaine pour le lavage, le reste au quotidien.</p></div></div>
+      <div class="steps">
+        <div class="step"><small>Étape 1</small><b>Laver</b><p>Shampooing adoucissant, sans dessécher le cuir chevelu.</p></div>
+        <div class="step"><small>Étape 2</small><b>Hydrater</b><p>Spray hydratant sur cheveux humides, mèche par mèche.</p></div>
+        <div class="step"><small>Étape 3</small><b>Nourrir</b><p>Chantilly ou pommade sur les longueurs et les pointes.</p></div>
+        <div class="step"><small>Étape 4</small><b>Stimuler</b><p>Huile booster en massage du cuir chevelu, 2 à 3 fois par semaine.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="tk">
+        <div>
+          <div class="eyebrow">Retours clientes</div>
+          <h2 style="font-size:clamp(26px,3.6vw,36px);margin:8px 0 10px">Les résultats sont sur TikTok, en vidéo.</h2>
+          <p class="muted" style="font-size:15px;margin:0 0 16px">Avant/après, déballages et conseils : rejoins la communauté Capiluxe.</p>
+          <a class="btn" href="https://www.tiktok.com/@capiluxe221" target="_blank" rel="noopener">Voir @capiluxe221</a>
+        </div>
+        <div class="stats">
+          <div><b class="num">6,9K</b><span>abonnées</span></div>
+          <div><b class="num">36,7K</b><span>j'aime</span></div>
+          <div><b class="num">54,5K</b><span>vues sur le kit</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div>
+        <a class="logo" href="#top"><span><b>Capiluxe</b></span></a>
+        <p style="margin-top:8px">Soins capillaires naturels, préparés à Saint-Louis.</p>
+      </div>
+      <div><h4>Commander</h4><ul><li>WhatsApp : <span class="num">77 132 27 79</span></li><li>Livraison 500 F à Saint-Louis</li><li>Expédition vers les autres villes</li></ul></div>
+      <div><h4>Suivre</h4><ul><li><a href="https://www.tiktok.com/@capiluxe221" target="_blank" rel="noopener">TikTok @capiluxe221</a></li><li>Saint-Louis, Sénégal</li></ul></div>
+    </div>
+  </footer>
+</div>
+
+<!-- ============ ADMIN ============ -->
+<div id="admin" class="admin" hidden>
+  <div class="wrap">
+    <div class="sechead">
+      <div><div class="eyebrow">Espace Capiluxe</div><h2>Commandes</h2><p>Chaque commande passée sur le site arrive ici et sur ton WhatsApp. Tu changes le statut en un geste.</p></div>
+      <button class="btn ghost" id="resetDemo">Réinitialiser la démo</button>
+    </div>
+    <div class="note">Les commandes marquées « exemple » sont fictives et servent à montrer l'outil. Passe une commande côté Boutique : elle apparaît ici.</div>
+    <div class="kpis" id="kpis"></div>
+    <div class="filters" id="filters" role="group" aria-label="Filtrer par statut"></div>
+    <div class="orders" id="orders"></div>
+  </div>
+</div>
+
+<!-- panier -->
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Panier">
+  <div class="dh"><h2 id="dTitle">Ton panier</h2><button class="x" id="closeCart" aria-label="Fermer">✕</button></div>
+  <div class="db" id="dBody"></div>
+  <div class="df" id="dFoot"></div>
+</aside>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const WA = "221771322279";
+const fmt = n => n.toLocaleString("fr-FR").replace(/ | /g," ") + " F";
+
+/* ---------- visuels produits (remplaçables par les vraies photos) ---------- */
+const PHOTOS = {}; // ex: PHOTOS.pommade = "data:image/jpeg;base64,..."
+const label = (x,y,w,h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="#F4C6DA"/>
+  <circle cx="${x+w/2}" cy="${y+h*0.34}" r="${w*0.16}" fill="#2C1528"/><circle cx="${x+w/2-w*.11}" cy="${y+h*0.27}" r="${w*.07}" fill="#2C1528"/><circle cx="${x+w/2+w*.11}" cy="${y+h*0.27}" r="${w*.07}" fill="#2C1528"/>
+  <ellipse cx="${x+w/2}" cy="${y+h*0.4}" rx="${w*.07}" ry="${w*.09}" fill="#C98A6B"/>
+  <text x="${x+w/2}" y="${y+h*0.72}" text-anchor="middle" font-family="Pinyon Script, cursive" font-size="${w*0.2}" fill="#2C1528">Capiluxe</text>
+  <rect x="${x+w*.2}" y="${y+h*0.8}" width="${w*.6}" height="2" fill="#2C1528" opacity=".35"/>`;
+const ART = {
+  jar:(fill)=>`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="172" rx="66" ry="10" fill="#000" opacity=".08"/><rect x="38" y="62" width="124" height="106" rx="16" fill="${fill}" stroke="#ffffff" stroke-opacity=".6" stroke-width="3"/><rect x="34" y="44" width="132" height="28" rx="10" fill="#FFFFFF" stroke="#E6CFDA" stroke-width="2"/>${label(64,86,72,64)}</svg>`,
+  spray:()=>`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="182" rx="40" ry="7" fill="#000" opacity=".08"/><rect x="66" y="66" width="68" height="112" rx="14" fill="#C9852E" opacity=".9"/><rect x="88" y="44" width="24" height="24" rx="4" fill="#FFFFFF" stroke="#E6CFDA" stroke-width="2"/><path d="M84 30h40v14H84z" fill="#FFFFFF" stroke="#E6CFDA" stroke-width="2"/><path d="M124 34l18 4-18 6z" fill="#FFFFFF" stroke="#E6CFDA" stroke-width="2"/>${label(72,84,56,78)}</svg>`,
+  dropper:()=>`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="182" rx="36" ry="6" fill="#000" opacity=".08"/><rect x="72" y="84" width="56" height="94" rx="12" fill="#B9862F" opacity=".92"/><rect x="84" y="62" width="32" height="24" rx="4" fill="#2C1528"/><ellipse cx="100" cy="46" rx="13" ry="20" fill="#2C1528"/>${label(76,100,48,66)}</svg>`,
+  shampoo:()=>`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="184" rx="42" ry="7" fill="#000" opacity=".08"/><rect x="62" y="52" width="76" height="128" rx="18" fill="#F9F2F5" stroke="#E6CFDA" stroke-width="2"/><rect x="80" y="30" width="40" height="24" rx="6" fill="#D9467F"/>${label(70,80,60,80)}</svg>`,
+  gel:()=>`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="172" rx="60" ry="9" fill="#000" opacity=".08"/><rect x="46" y="70" width="108" height="98" rx="14" fill="#B8C77A" opacity=".85" stroke="#fff" stroke-opacity=".6" stroke-width="3"/><circle cx="70" cy="100" r="3" fill="#2C1528" opacity=".6"/><circle cx="130" cy="140" r="3" fill="#2C1528" opacity=".6"/><circle cx="118" cy="92" r="2.5" fill="#2C1528" opacity=".6"/><rect x="42" y="52" width="116" height="26" rx="10" fill="#FFFFFF" stroke="#E6CFDA" stroke-width="2"/>${label(68,92,64,60)}</svg>`,
+  kit:()=>`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="28" y="40" width="34" height="132" rx="10" fill="#B9A3E3"/><g fill="#B9A3E3">${Array.from({length:9},(_,i)=>`<rect x="62" y="${48+i*13}" width="30" height="5" rx="2"/>`).join("")}</g><rect x="104" y="44" width="62" height="78" rx="30" fill="#F08DB4"/><g fill="#D9467F">${Array.from({length:12},(_,i)=>`<circle cx="${118+(i%4)*12}" cy="${60+Math.floor(i/4)*16}" r="3"/>`).join("")}</g><rect x="126" y="118" width="18" height="56" rx="8" fill="#F08DB4"/><path d="M96 170c10-14 26-14 36 0" fill="none" stroke="#B9A3E3" stroke-width="10" stroke-linecap="round"/></svg>`,
+  bonnet:()=>`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="170" rx="70" ry="9" fill="#000" opacity=".08"/><path d="M30 130c0-50 30-84 70-84s70 34 70 84z" fill="#C9B6F2"/><rect x="24" y="124" width="152" height="30" rx="15" fill="#B9A3E3"/><path d="M60 90c20-20 60-20 80 0" stroke="#fff" stroke-opacity=".5" stroke-width="4" fill="none"/></svg>`,
+  brush:()=>`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-28 100 100)"><rect x="84" y="20" width="32" height="96" rx="14" fill="#2C1528"/><g fill="#F08DB4">${Array.from({length:7},(_,i)=>`<rect x="72" y="${28+i*12}" width="10" height="4" rx="2"/><rect x="118" y="${28+i*12}" width="10" height="4" rx="2"/>`).join("")}</g><rect x="88" y="114" width="24" height="70" rx="11" fill="#F4C6DA"/><circle cx="100" cy="130" r="4" fill="#2E8B57"/></g></svg>`
+};
+function art(p){ return PHOTOS[p.id] ? `<img src="${PHOTOS[p.id]}" alt="${p.name}">` : ART[p.art](p.fill); }
+
+/* ---------- catalogue (prix indicatifs, à valider avec Capiluxe) ---------- */
+const PRODUCTS = [
+  {id:"pommade",name:"Pommade capillaire",desc:"Karité, cacao et huiles végétales. Nourrit, lutte contre la casse.",price:3500,art:"jar",fill:"#E9C34B",tags:["pousse","crepus","locks"],badge:"Best-seller"},
+  {id:"chantilly",name:"Chantilly capillaire",desc:"Texture fouettée, légère. Hydrate sans alourdir.",price:4000,art:"jar",fill:"#FBF6EF",tags:["crepus","enfants"],badge:"Nouvelle texture"},
+  {id:"huile",name:"Huile booster pousse",desc:"À masser sur le cuir chevelu pour stimuler la pousse.",price:3500,art:"dropper",tags:["pousse","locks"],badge:"24,8K vues"},
+  {id:"spray",name:"Spray hydratant",desc:"Cheveux doux, souples et faciles à démêler.",price:3000,art:"spray",tags:["crepus","enfants","locks"]},
+  {id:"shampooing",name:"Shampooing adoucissant",desc:"Lave en douceur, prépare au soin.",price:3500,art:"shampoo",tags:["crepus","enfants"],badge:"Nouveau"},
+  {id:"gel",name:"Gel gombo & nigelle",desc:"Gel naturel pour définir et fixer les coiffures.",price:2500,art:"gel",tags:["crepus","locks"]},
+  {id:"kit",name:"Kit accessoires",desc:"Peigne, pinces, brosse démêlante, masseur de cuir chevelu.",price:3000,art:"kit",tags:["accessoires","enfants"]},
+  {id:"bonnet",name:"Bonnet microfibre",desc:"Sèche vite et protège tes cheveux la nuit.",price:2500,art:"bonnet",tags:["accessoires"]},
+  {id:"brosse",name:"Brosse chauffante",desc:"Lisse et coiffe en quelques minutes.",price:10000,art:"brush",tags:["accessoires"]}
+];
+const PACKS = [
+  {id:"g-essentielle",name:"Gamme Essentielle",price:6000,was:null,items:["Pommade capillaire","Spray hydratant","Conseils WhatsApp offerts"],hi:false},
+  {id:"g-pousse",name:"Gamme Pousse",price:8500,was:null,items:["Pommade capillaire","Huile booster pousse","Spray hydratant","Suivi de résultats sur 1 mois"],hi:true},
+  {id:"g-complete",name:"Gamme Complète",price:12000,was:null,items:["Shampooing adoucissant","Chantilly ou pommade","Huile booster + spray","Kit accessoires"],hi:false}
+];
+const TYPES = [["all","Tout voir"],["pousse","Pousse & chute"],["crepus","Cheveux crépus"],["locks","Locks"],["enfants","Enfants"],["accessoires","Accessoires"]];
+
+/* ---------- état ---------- */
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+let cart = store.get("capi_cart",{});
+let filter = "all";
+const byId = id => PRODUCTS.find(p=>p.id===id) || PACKS.find(p=>p.id===id);
+
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2200)}
+
+/* ---------- boutique ---------- */
+document.getElementById("heroArt").innerHTML =
+  ART.jar("#E9C34B").replace("<svg",'<svg class="a"') + ART.spray().replace("<svg",'<svg class="b"') + ART.dropper().replace("<svg",'<svg class="c2"');
+
+function renderTypes(){
+  document.getElementById("types").innerHTML = TYPES.map(([k,l])=>`<button data-t="${k}" aria-pressed="${k===filter}">${l}</button>`).join("");
+}
+function renderGrid(){
+  const list = PRODUCTS.filter(p=>filter==="all"||p.tags.includes(filter));
+  document.getElementById("grid").innerHTML = list.map(p=>`
+    <article class="card">
+      <div class="pic">${p.badge?`<span class="tag">${p.badge}</span>`:""}${art(p)}</div>
+      <div class="body"><h3>${p.name}</h3><p>${p.desc}</p>
+        <div class="row"><span class="price num">${fmt(p.price)}</span><button class="add" data-add="${p.id}">Ajouter</button></div>
+      </div>
+    </article>`).join("");
+}
+function renderPacks(){
+  document.getElementById("packs").innerHTML = PACKS.map(p=>`
+    <div class="pack ${p.hi?"hi":""}">
+      ${p.hi?'<span class="chip" style="align-self:start">La plus choisie</span>':""}
+      <h3>${p.name}</h3>
+      <ul>${p.items.map(i=>`<li>${i}</li>`).join("")}</ul>
+      <div class="pp"><b class="num">${fmt(p.price)}</b></div>
+      <button class="btn" data-add="${p.id}">Commander cette gamme</button>
+    </div>`).join("");
+}
+function count(){return Object.values(cart).reduce((a,b)=>a+b,0)}
+function subtotal(){return Object.entries(cart).reduce((s,[id,q])=>s+byId(id).price*q,0)}
+function saveCart(){store.set("capi_cart",cart);document.getElementById("cartCount").textContent=count()}
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-t]"); if(t){filter=t.dataset.t;renderTypes();renderGrid();return}
+  const a=e.target.closest("[data-add]"); if(a){const id=a.dataset.add;cart[id]=(cart[id]||0)+1;saveCart();
+    a.classList.add("done");const old=a.textContent;a.textContent="Ajouté ✓";setTimeout(()=>{a.classList.remove("done");a.textContent=old},1200);
+    toast(byId(id).name+" ajouté au panier");return}
+});
+
+/* ---------- panier / commande ---------- */
+const QUARTIERS = ["Sor","Ndar (île)","Guet Ndar","Pikine","Balacoss","Hydrobase","Sanar / UGB","Ngallèle","Bango","Khor","Autre quartier de Saint-Louis","Autre ville (expédition)"];
+let step = "cart";
+function deliveryFee(q){ if(!q) return 0; return q==="Autre ville (expédition)" ? 2000 : 500; }
+
+function openCart(){step="cart";drawCart();document.getElementById("drawer").hidden=false;document.getElementById("scrim").hidden=false}
+function closeCart(){document.getElementById("drawer").hidden=true;document.getElementById("scrim").hidden=true}
+document.getElementById("openCart").onclick=openCart;
+document.getElementById("closeCart").onclick=closeCart;
+document.getElementById("scrim").onclick=closeCart;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCart()});
+
+function drawCart(){
+  const B=document.getElementById("dBody"),F=document.getElementById("dFoot"),T=document.getElementById("dTitle");
+  if(step==="cart"){
+    T.textContent="Ton panier";
+    const ids=Object.keys(cart);
+    if(!ids.length){B.innerHTML=`<p class="muted">Ton panier est vide. Commence par la <strong>Gamme Pousse</strong>, la plus choisie.</p><button class="btn" data-add="g-pousse">Ajouter la Gamme Pousse</button>`;F.innerHTML="";return}
+    B.innerHTML=ids.map(id=>{const p=byId(id);const pic=p.art?art(p):ART.jar("#E9C34B");return`
+      <div class="line"><div class="mini">${pic}</div>
+        <div><strong>${p.name}</strong><div class="muted num">${fmt(p.price)}</div>
+          <div class="qty"><button data-q="${id}" data-d="-1" aria-label="Retirer un">−</button><span class="num">${cart[id]}</span><button data-q="${id}" data-d="1" aria-label="Ajouter un">+</button></div></div>
+        <strong class="num">${fmt(p.price*cart[id])}</strong></div>`}).join("");
+    F.innerHTML=`<div class="tot"><span>Sous-total</span><strong class="num">${fmt(subtotal())}</strong></div>
+      <div class="muted">Livraison : 500 F à Saint-Louis, calculée à l'étape suivante.</div>
+      <button class="btn" id="toCheckout" style="justify-content:center">Commander · payer à la livraison</button>`;
+    document.getElementById("toCheckout").onclick=()=>{step="form";drawCart()};
+  }
+  if(step==="form"){
+    T.textContent="Livraison";
+    B.innerHTML=`<form class="form" id="coForm" novalidate>
+      <label for="f-name">Prénom et nom<input id="f-name" autocomplete="name" placeholder="Ex. Awa Diop"></label>
+      <label for="f-phone">Téléphone (WhatsApp)<input id="f-phone" inputmode="tel" autocomplete="tel" placeholder="77 000 00 00"></label>
+      <label for="f-q">Quartier<select id="f-q"><option value="">Choisir…</option>${QUARTIERS.map(q=>`<option>${q}</option>`).join("")}</select></label>
+      <label for="f-addr">Repère pour le livreur<input id="f-addr" placeholder="Ex. derrière la mosquée, maison bleue"></label>
+      <div class="pay" role="radiogroup" aria-label="Paiement">
+        <label><input type="radio" name="pay" value="À la livraison" checked> <span>Paiement à la livraison<small>Tu paies en espèces quand tu reçois</small></span></label>
+        <label><input type="radio" name="pay" value="Wave"> <span>Wave<small>Le numéro t'est envoyé sur WhatsApp</small></span></label>
+        <label><input type="radio" name="pay" value="Orange Money"> <span>Orange Money<small>Le numéro t'est envoyé sur WhatsApp</small></span></label>
+      </div>
+      <div class="err" id="f-err" hidden></div>
+    </form>`;
+    const upd=()=>{const fee=deliveryFee(document.getElementById("f-q").value);document.getElementById("tFee").textContent=fee?fmt(fee):"—";document.getElementById("tTot").textContent=fmt(subtotal()+fee)};
+    F.innerHTML=`<div class="tot"><span>Sous-total</span><span class="num">${fmt(subtotal())}</span></div>
+      <div class="tot"><span>Livraison</span><span class="num" id="tFee">—</span></div>
+      <div class="tot big"><span>Total</span><span class="num" id="tTot">${fmt(subtotal())}</span></div>
+      <div style="display:flex;gap:8px"><button class="btn ghost" id="back">Retour</button><button class="btn" id="confirm" style="flex:1;justify-content:center">Valider ma commande</button></div>`;
+    document.getElementById("f-q").onchange=upd;
+    document.getElementById("back").onclick=()=>{step="cart";drawCart()};
+    document.getElementById("confirm").onclick=submitOrder;
+  }
+}
+document.getElementById("dBody").addEventListener("click",e=>{
+  const q=e.target.closest("[data-q]"); if(!q)return;
+  const id=q.dataset.q; cart[id]=(cart[id]||0)+Number(q.dataset.d); if(cart[id]<=0)delete cart[id]; saveCart(); drawCart();
+});
+
+function submitOrder(){
+  const v=id=>document.getElementById(id).value.trim();
+  const name=v("f-name"),phone=v("f-phone").replace(/\s/g,""),q=v("f-q"),addr=v("f-addr");
+  const pay=document.querySelector('input[name="pay"]:checked').value;
+  const err=document.getElementById("f-err");
+  if(!name||!q){err.textContent="Indique ton nom et ton quartier pour qu'on puisse te livrer.";err.hidden=false;return}
+  if(!/^(\+?221)?7[05678]\d{7}$/.test(phone)){err.textContent="Numéro invalide. Exemple : 77 123 45 67.";err.hidden=false;return}
+  const fee=deliveryFee(q);
+  const orders=store.get("capi_orders",seed());
+  const n=orders.reduce((m,o)=>Math.max(m,o.n),1040)+1;
+  const items=Object.entries(cart).map(([id,qt])=>({name:byId(id).name,q:qt,price:byId(id).price}));
+  const order={n,date:new Date().toISOString(),name,phone,q,addr,pay,items,fee,total:subtotal()+fee,status:"Nouvelle",example:false};
+  orders.unshift(order); store.set("capi_orders",orders);
+  const msg=`Bonjour Capiluxe 🌸\nNouvelle commande n°${n}\n\n${items.map(i=>`• ${i.q} × ${i.name} (${fmt(i.price*i.q)})`).join("\n")}\n\nLivraison : ${fmt(fee)}\nTOTAL : ${fmt(order.total)}\nPaiement : ${pay}\n\nNom : ${name}\nTél : ${phone}\nQuartier : ${q}${addr?`\nRepère : ${addr}`:""}`;
+  cart={};saveCart();
+  document.getElementById("dTitle").textContent="Merci "+name.split(" ")[0]+" !";
+  document.getElementById("dBody").innerHTML=`<div class="okbox"><strong>Commande n°${n} enregistrée.</strong>
+    <span class="muted">Envoie-la sur WhatsApp pour que Capiluxe la confirme. Livraison sous 24 h à Saint-Louis.</span>
+    <a class="btn wa" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener" style="justify-content:center">Envoyer sur WhatsApp</a>
+    <span class="muted">Le bouton ne s'ouvre pas ? Copie le message et envoie-le au <strong class="num">77 132 27 79</strong>.</span>
+    <pre id="msg">${msg.replace(/</g,"&lt;")}</pre>
+    <button class="btn ghost" id="copyMsg" style="justify-content:center">Copier le message</button></div>`;
+  document.getElementById("dFoot").innerHTML=`<button class="btn ghost" id="seeAdmin" style="justify-content:center">Voir côté Capiluxe (espace commandes)</button>`;
+  document.getElementById("copyMsg").onclick=()=>{navigator.clipboard.writeText(msg).then(()=>toast("Message copié")).catch(()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("msg"));const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Sélectionné, copie-le")})};
+  document.getElementById("seeAdmin").onclick=()=>{closeCart();setView("admin")};
+}
+
+/* ---------- espace commandes ---------- */
+const STATUSES=["Nouvelle","Confirmée","En livraison","Livrée","Annulée"];
+const STCOL={"Nouvelle":"var(--accent)","Confirmée":"var(--lilac-ink)","En livraison":"var(--warn)","Livrée":"var(--ok)","Annulée":"var(--bad)"};
+let afilter="Toutes";
+function seed(){
+  const d=h=>new Date(Date.now()-h*3600e3).toISOString();
+  return [
+    {n:1040,date:d(2),name:"Awa (exemple)",phone:"770000001",q:"Sor",addr:"Près du marché",pay:"À la livraison",items:[{name:"Gamme Pousse",q:1,price:8500}],fee:500,total:9000,status:"Nouvelle",example:true},
+    {n:1039,date:d(5),name:"Fatou (exemple)",phone:"780000002",q:"Sanar / UGB",addr:"Village C",pay:"Wave",items:[{name:"Chantilly capillaire",q:1,price:4000},{name:"Spray hydratant",q:1,price:3000}],fee:500,total:7500,status:"Confirmée",example:true},
+    {n:1038,date:d(20),name:"Mariama (exemple)",phone:"760000003",q:"Autre ville (expédition)",addr:"Dakar, Parcelles",pay:"Orange Money",items:[{name:"Gamme Complète",q:1,price:12000}],fee:2000,total:14000,status:"En livraison",example:true},
+    {n:1037,date:d(30),name:"Ndèye (exemple)",phone:"770000004",q:"Ndar (île)",addr:"",pay:"À la livraison",items:[{name:"Pommade capillaire",q:2,price:3500}],fee:500,total:7500,status:"Livrée",example:true}
+  ];
+}
+function renderAdmin(){
+  const orders=store.get("capi_orders",seed());
+  const today=new Date().toDateString();
+  const live=orders.filter(o=>o.status!=="Annulée");
+  const k=[["À traiter",orders.filter(o=>o.status==="Nouvelle").length],["En livraison",orders.filter(o=>o.status==="En livraison").length],
+    ["Encaissé (livrées)",fmt(orders.filter(o=>o.status==="Livrée").reduce((s,o)=>s+o.total,0))],["Commandes du jour",orders.filter(o=>new Date(o.date).toDateString()===today).length]];
+  document.getElementById("kpis").innerHTML=k.map(([l,v])=>`<div class="kpi"><span>${l}</span><b class="num">${v}</b></div>`).join("");
+  document.getElementById("filters").innerHTML=["Toutes",...STATUSES].map(s=>`<button data-af="${s}" aria-pressed="${s===afilter}">${s} <span class="num">(${s==="Toutes"?orders.length:orders.filter(o=>o.status===s).length})</span></button>`).join("");
+  const list=orders.filter(o=>afilter==="Toutes"||o.status===afilter);
+  document.getElementById("orders").innerHTML=list.length?list.map(o=>{
+    const when=new Date(o.date).toLocaleString("fr-FR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+    const reply=`Bonjour ${o.name.replace(" (exemple)","")}, c'est Capiluxe 🌸 Votre commande n°${o.n} (${fmt(o.total)}) est ${o.status.toLowerCase()}. Merci pour votre confiance !`;
+    return `<div class="order" style="--st:${STCOL[o.status]}">
+      <div><h3>N°${o.n} · ${o.name}</h3><div class="meta num">${when} · ${o.phone}</div><div class="meta">${o.q}${o.addr?" · "+o.addr:""}</div>
+        <div style="margin-top:6px"><span class="pill">${o.pay}</span>${o.example?' <span class="pill">exemple</span>':""}</div></div>
+      <div><ul>${o.items.map(i=>`<li>${i.q} × ${i.name}</li>`).join("")}</ul><div class="meta num" style="margin-top:4px">Livraison ${fmt(o.fee)} · <strong style="color:var(--ink)">Total ${fmt(o.total)}</strong></div></div>
+      <div class="act"><label class="meta" for="st-${o.n}">Statut</label><select id="st-${o.n}" data-st="${o.n}">${STATUSES.map(s=>`<option ${s===o.status?"selected":""}>${s}</option>`).join("")}</select>
+        <a class="mini-btn" href="https://wa.me/221${o.phone.replace(/^221/,"")}?text=${encodeURIComponent(reply)}" target="_blank" rel="noopener">Écrire sur WhatsApp</a></div>
+    </div>`}).join(""):`<p class="muted">Aucune commande avec ce statut.</p>`;
+}
+document.getElementById("admin").addEventListener("change",e=>{
+  const s=e.target.closest("[data-st]"); if(!s)return;
+  const orders=store.get("capi_orders",seed()); const o=orders.find(x=>x.n==s.dataset.st); o.status=s.value; store.set("capi_orders",orders); renderAdmin(); toast("Commande n°"+o.n+" : "+o.status);
+});
+document.getElementById("admin").addEventListener("click",e=>{const f=e.target.closest("[data-af]"); if(f){afilter=f.dataset.af;renderAdmin()}});
+document.getElementById("resetDemo").onclick=()=>{store.set("capi_orders",seed());afilter="Toutes";renderAdmin();toast("Démo réinitialisée")};
+
+function setView(v){
+  document.getElementById("shop").hidden=v!=="shop";document.getElementById("admin").hidden=v!=="admin";
+  document.getElementById("v-shop").setAttribute("aria-pressed",v==="shop");document.getElementById("v-admin").setAttribute("aria-pressed",v==="admin");
+  if(v==="admin")renderAdmin(); window.scrollTo(0,0);
+}
+document.getElementById("v-shop").onclick=()=>setView("shop");
+document.getElementById("v-admin").onclick=()=>setView("admin");
+
+renderTypes();renderGrid();renderPacks();saveCart();
+if(location.hash==="#admin")setView("admin");
+</script>
+
+</body>
+</html>
